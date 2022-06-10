@@ -72,52 +72,67 @@ const menu = [
     img: "./images/item-9.jpeg",
     desc: `skateboard fam synth authentic semiotics. Live-edge lyft af, edison bulb yuccie crucifix microdosing.`,
   },
+  {
+    id: 10,
+    title: "steak dinner",
+    category: "dinner",
+    price: 39.99,
+    img: "./images/item-10.jpeg",
+    desc: `skateboard fam synth authentic semiotics. Live-edge lyft af, edison bulb yuccie crucifix microdosing.`,
+  },
 ];
+// Dynamic Filter Buttons:
+// get only unique categories
+// iterate over categories return buttons
+// make sure to select buttons when they are available
+
 //选择element
 const sectionCenter = document.querySelector(".section-center");
-// DOMContentLoaded event listener
+const btnContainer = document.querySelector(".btn-container");
+//load items:
 window.addEventListener("DOMContentLoaded", function () {
   displayMenuItems(menu);
+  displayMenuButtons();
 });
 
-//btn方法1：选择parent element，使用e.target
-/*//选择element
-const btnContainer = document.querySelector(".btn-container");
-//给parent增加eventlistener
-btnContainer.addEventListener("click", function (e) {
-  // console.log(e.target.textContent);
-  let filtedMenu = menu.filter(function (selectedItem) {
-    return selectedItem.category === e.target.textContent;
-  });
-  //点击all按钮时，由于没有叫all的分类，什么都不显示。因此加了下面的代码：
-  e.target.textContent === "all" ? (filtedMenu = [...menu]) : null;
-  displayMenuItems(filtedMenu);
-});*/
-//btn方法2：选择所有button，用forEach
-const filterBtns = document.querySelectorAll(".filter-btn");
-//filter items:
-filterBtns.forEach(function (btn) {
-  btn.addEventListener("click", function (e) {
-    //这里用dataset而不是用textContent，是为了防止text和category不一致
-    const category = e.currentTarget.dataset.id;
-    const menuCategory = menu.filter(function (menuItem) {
-      //如果不设置任何筛选条件，则会返回所有Item；
-      //但此处设置了这个条件，当按钮是all时，什么都不会返回。
-      if (menuItem.category === category) {
-        return menuItem;
+function displayMenuButtons() {
+  //这里array中写上all是因为它不属于category的一种，不会自动添加。但是我们需要它来分类。
+  const categories = menu.reduce(
+    function (values, item) {
+      //查看array中是否已存在某个category，如无，则添加。
+      if (!values.includes(item.category)) {
+        values.push(item.category);
+      }
+      return values;
+    },
+    ["all"]
+  );
+  //buttons的HTML
+  const categoryBtn = categories
+    .map(function (category) {
+      return `<button class="filter-btn" type="button" data-id=${category}>${category}</button>`;
+    })
+    .join("");
+  btnContainer.innerHTML = categoryBtn;
+  //这个element因为不是HTML里预先写好的，因此要等JS写好后再选择。
+  const filterBtns = document.querySelectorAll(".filter-btn");
+  //filter items:
+  filterBtns.forEach(function (btn) {
+    btn.addEventListener("click", function (e) {
+      const category = e.currentTarget.dataset.id;
+      const menuCategory = menu.filter(function (menuItem) {
+        if (menuItem.category === category) {
+          return menuItem;
+        }
+      });
+      if (category === "all") {
+        displayMenuItems(menu);
+      } else {
+        displayMenuItems(menuCategory);
       }
     });
-    //display：这个方法是在display阶段设置all显示的内容，即直接显示menu；第一个方法是在filter阶段，直接更改筛选过的array，因此只用一次displayMenuItems function。
-    if (category === "all") {
-      displayMenuItems(menu);
-    } else {
-      displayMenuItems(menuCategory);
-    }
   });
-});
-
-//将之前DOMContentLoaded event listener的callback function单独存为function。
-//注意parameter。menu用作argument。
+}
 function displayMenuItems(menuItems) {
   let displayMenu = menuItems.map(function (item) {
     return `<article class="menu-item">
