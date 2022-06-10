@@ -78,9 +78,13 @@ const sectionCenter = document.querySelector(".section-center");
 
 // DOMContentLoaded event listener
 window.addEventListener("DOMContentLoaded", function () {
-  //新建一个变量存放map输出的new array
-  let displayMenu = menu.map(function (item) {
-    //这里return的是单个item，而在整个变量中存放的是单个item的集合，也就是一个新的array。
+  displayMenuItems(menu);
+});
+
+//将之前DOMContentLoaded event listener的callback function单独存为function。
+//注意parameter。menu用作argument。
+function displayMenuItems(menuItems) {
+  let displayMenu = menuItems.map(function (item) {
     return `<article class="menu-item">
           <img class="photo" src=${item.img} alt=${item.title} />
           <!-- 需要layout,所以文字放在div里 -->
@@ -95,8 +99,6 @@ ${item.desc}
           </div>
         </article>`;
   });
-  //join()把array elements转化为string，加""可以去掉里面的comma。
   displayMenu = displayMenu.join("");
-  // console.log(displayMenu);
   sectionCenter.innerHTML = displayMenu;
-});
+}
